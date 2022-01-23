@@ -75,6 +75,22 @@ class LibriSpeechConfigs(OpenspeechDataclass):
         default="../../../LibriSpeech/libri_subword_manifest.txt", metadata={"help": "Path of manifest file"}
     )
 
+@dataclass
+class LibriSpeechTestConfigs(OpenspeechDataclass):
+    """ Configuration dataclass that common used """
+    dataset: str = field(
+        default="librispeech_test", metadata={"help": "Select dataset for training (librispeech, librispeech_test, ksponspeech, aishell, lm)"}
+    )
+    dataset_path: str = field(
+        default=MISSING, metadata={"help": "Path of dataset"}
+    )
+    dataset_download: bool = field(
+        default=True, metadata={"help": "Flag indication whether to download dataset or not."}
+    )
+    manifest_file_path: str = field(
+        default="../../../LibriSpeech_test/libri_subword_manifest.txt", metadata={"help": "Path of manifest file"}
+    )
+
 
 @dataclass
 class KsponSpeechConfigs(OpenspeechDataclass):

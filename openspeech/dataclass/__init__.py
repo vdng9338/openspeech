@@ -23,6 +23,7 @@
 from .configurations import (
     AugmentConfigs,
     LibriSpeechConfigs,
+    LibriSpeechTestConfigs,
     KsponSpeechConfigs,
     AIShellConfigs,
     LMConfigs,
@@ -65,6 +66,7 @@ DATASET_DATACLASS_REGISTRY = {
     "aishell": AIShellConfigs,
     "ksponspeech": KsponSpeechConfigs,
     "librispeech": LibriSpeechConfigs,
+    "librispeech_test": LibriSpeechTestConfigs,
     "lm": LMConfigs,
 }
 TRAINER_DATACLASS_REGISTRY = {
