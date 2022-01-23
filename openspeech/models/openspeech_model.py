@@ -55,6 +55,7 @@ class OpenspeechModel(pl.LightningModule):
     """
     def __init__(self, configs: DictConfig, tokenizer: Tokenizer) -> None:
         super(OpenspeechModel, self).__init__()
+        self.save_hyperparameters()
         self.configs = configs
         self.num_classes = len(tokenizer)
         self.gradient_clip_val = configs.trainer.gradient_clip_val

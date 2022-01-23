@@ -63,8 +63,6 @@ class ContextNetModel(OpenspeechCTCModel):
         }
         alpha = supported_models[self.configs.model.model_size]
         self.fc = Linear(int(self.configs.model.encoder_dim * alpha), self.num_classes, bias=False)
-
-    def build_model(self):
         self.encoder = ContextNetEncoder(
             num_classes=self.num_classes,
             model_size=self.configs.model.model_size,
@@ -75,6 +73,9 @@ class ContextNetModel(OpenspeechCTCModel):
             output_dim=self.configs.model.encoder_dim,
             joint_ctc_attention=False,
         )
+
+    def build_model(self):
+        pass
 
     def forward(self, inputs: Tensor, input_lengths: Tensor) -> Dict[str, Tensor]:
         r"""

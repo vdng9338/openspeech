@@ -69,7 +69,7 @@ def register_model(name: str, dataclass=None):
 # automatically import any Python files in the models/ directory
 models_dir = os.path.dirname(__file__)
 for file in os.listdir(models_dir):
-    if os.path.isdir(os.path.join(models_dir, file)) and not file.startswith('__'):
+    if os.path.isdir(os.path.join(models_dir, file)) and not file.startswith('__') and not file.startswith('.'):
         for subfile in os.listdir(os.path.join(models_dir, file)):
             path = os.path.join(models_dir, file, subfile)
             if subfile.endswith(".py"):
