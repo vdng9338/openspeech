@@ -24,15 +24,18 @@ import os
 import hydra
 import warnings
 import logging
+import torch
 from omegaconf import DictConfig, OmegaConf
 from openspeech.metrics import WordErrorRate, CharacterErrorRate
 from pytorch_lightning.utilities import rank_zero_info
 
 from openspeech.data.audio.dataset import SpeechToTextDataset
-from openspeech.data.sampler import RandomSampler
+from openspeech.data.sampler import RandomSampler#, SmartBatchingSampler
 from openspeech.data.audio.data_loader import load_dataset, AudioDataLoader
 from openspeech.dataclass.initialize import hydra_eval_init
 from openspeech.models import MODEL_REGISTRY
+
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -42,9 +45,12 @@ def hydra_main(configs: DictConfig) -> None:
     rank_zero_info(OmegaConf.to_yaml(configs))
     wer, cer = 1.0, 1.0
 
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
     audio_paths, transcripts = load_dataset(configs.eval.manifest_file_path)
 
-    model = MODEL_REGISTRY[configs.eval.model_name].load_from_checkpoint(configs.eval.checkpoint_path)
+    model = MODEL_REGISTRY[configs.eval.model_name].load_from_checkpoint(configs.eval.checkpoint_path).to(device)
+    model.eval()
 
     if configs.eval.beam_size > 1:
         model.set_beam_decoder(beam_size=configs.eval.beam_size)
@@ -69,13 +75,16 @@ def hydra_main(configs: DictConfig) -> None:
     wer_metric = WordErrorRate(tokenizer)
     cer_metric = CharacterErrorRate(tokenizer)
 
-    for i, (batch) in enumerate(data_loader):
-        inputs, targets, input_lengths, target_lengths = batch
+    with torch.no_grad():
+        for i, (batch) in enumerate(tqdm(data_loader)):
+            inputs, targets, input_lengths, target_lengths = batch
+            inputs = inputs.to(device)
+            input_lengths = input_lengths.to(device)
 
-        outputs = model(inputs, input_lengths)
+            outputs = model(inputs, input_lengths)
 
-        wer = wer_metric(targets, outputs["predictions"])
-        cer = cer_metric(targets, outputs["predictions"])
+            wer = wer_metric(targets, outputs["predictions"].cpu())
+            cer = cer_metric(targets, outputs["predictions"].cpu())
 
     logger.info(f"Word Error Rate: {wer}, Character Error Rate: {cer}")
 

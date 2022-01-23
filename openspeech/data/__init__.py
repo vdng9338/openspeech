@@ -62,7 +62,7 @@ def register_audio_feature_transform(name: str, dataclass=None):
 
 data_dir = os.path.dirname(__file__)
 for file in os.listdir(f"{data_dir}/audio"):
-    if os.path.isdir(f"{data_dir}/audio/{file}") and not file.startswith('__'):
+    if os.path.isdir(f"{data_dir}/audio/{file}") and not file.startswith('__') and not file.startswith('.'):
         path = f"{data_dir}/audio/{file}"
         for module_file in os.listdir(path):
             path = os.path.join(path, module_file)
