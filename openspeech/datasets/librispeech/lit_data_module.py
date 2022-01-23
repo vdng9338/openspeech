@@ -114,6 +114,12 @@ class LightningLibriSpeechDataModule(pl.LightningDataModule):
         if not os.path.exists(os.path.join(self.configs.dataset.dataset_path, train_dir)):
             os.mkdir(os.path.join(self.configs.dataset.dataset_path, train_dir))
 
+        for part in self.LIBRISPEECH_PARTS:
+            path = os.path.join(os.path.join(self.configs.dataset.dataset_path, "LibriSpeech"), part)
+            shutil.move(
+                path,
+                os.path.join(self.configs.dataset.dataset_path, part)
+            )
         for part in self.LIBRISPEECH_PARTS[-3:]:    # train
             path = os.path.join(self.configs.dataset.dataset_path, part)
             subfolders = os.listdir(path)
